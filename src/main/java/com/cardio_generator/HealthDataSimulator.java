@@ -150,3 +150,48 @@ public class HealthDataSimulator {
         scheduler.scheduleAtFixedRate(task, random.nextInt(5), period, timeUnit);
     }
 }
+
+
+/*
+
+End-to-end (E2E) test 
+     v----------------------v
+    input -> program -> output 
+
+Integration test
+    input -> program -> output
+
+          v-------v        v-------v
+    csvreader -> dataanalysis -> database
+    ---------------program---------------
+
+Unit test 
+    gamelogic 
+    - fun moveEnemies  <- Unit test
+    - fun directGun    <- Unit test
+    - fun checkHealth  <- Unit test
+
+
+def clamp_integer(integer, min, max):
+    if integer = infinity:
+        raiseError("error message")
+
+    if integer < min:
+        return min
+    elif integer > max:
+        return max
+    else 
+        return integer
+
+Unit test
+    case integer = infinity, min = 1, max = 6 -> expected: error
+    case integer = NaN, min = 1, max = 6 -> expected: error
+    case integer = 1, min = 1, max = 6 -> expected: 1
+    case integer = 5, min = 1, max = 6 -> expected: 5
+    case integer = 15, min = 1, max = 6 -> expected: 6
+    case integer = null, min = 1, max = 6 -> expected: error
+    case integer = -100000, min = 1, max = 6 -> expected = 1
+    case integer = 3.543534, min = 1, max = 6 -> expected: error - integer ile çalışır, float gönderdin
+
+
+*/
