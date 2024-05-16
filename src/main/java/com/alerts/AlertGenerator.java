@@ -1,5 +1,6 @@
 package com.alerts;
 
+import com.data_management.DataReader;
 import com.data_management.DataStorage;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
@@ -8,6 +9,10 @@ import java.util.List;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Date;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The {@code AlertGenerator} class is responsible for monitoring patient data
@@ -31,6 +36,33 @@ public class AlertGenerator {
         this.dataStorage = dataStorage;
     }
 
+    public Alert BloodPressureChecker(List<PatientRecord> records) {
+        // conditions
+        List<PatientRecord> lastThreeRecords = records.subList(Math.max(records.size() - 3, 0), records.size());
+
+        double firstM = lastThreeRecords.get(0).getMeasurementValue();
+        double secondM = lastThreeRecords.get(1).getMeasurementValue();
+        double thirdM = lastThreeRecords.get(2).getMeasurementValue();
+
+        if (firstM - secondM <= -10.0 && secondM - thirdM <= -10.0) {
+            String patientId = Integer.toString(lastThreeRecords.get(0).getPatientId());
+            String condition = "Blood Pressure Decreasing Trend Alert";
+            long now = System.currentTimeMillis() / 1000L;
+            return new Alert(patientId, condition, now);
+        }
+        
+        if (firstM - secondM >= 10.0 && secondM - thirdM >= 10.0) {
+            String patientId = Integer.toString(lastThreeRecords.get(0).getPatientId());
+            String condition = "Blood Pressure Increasing Trend Alert";
+            long now = System.currentTimeMillis() / 1000L;
+            return new Alert(patientId, condition, now);
+        }
+
+        // todo: Critical Threshold Alert
+
+        return null;
+    }
+
     /**
      * Evaluates the specified patient's data to determine if any alert conditions
      * are met. If a condition is met, an alert is triggered via the
@@ -42,10 +74,32 @@ public class AlertGenerator {
      * @param patient the patient data to evaluate for alert conditions
      */
     public void evaluateData(Patient patient) {
+
+        //long nowMinus10Seconds = (System.currentTimeMillis() - 10000) / 1000L;
+        long now = System.currentTimeMillis() / 1000L;
+        List<PatientRecord> records = patient.getRecords(0, now); 
+        Collections.sort(records, (d1, d2) -> { return Long.compare(d1.getTimestamp(), d2.getTimestamp()); });
+
+
+        Alert bpAlert = BloodPressureChecker(records /* TODO: filter by label, only send blood pressure readings */); // records.filter(record -> recordType === "Blood Pressure")
+        Alert bsAlert = BloodSaturationChecker(records /* TODO: filter by label, only send blood pressure readings */);
+        /**
+         * other checkers
+         */
+
+
         
-    public static void bloodPreassureAlert(List<String[]> records) {
-    
-        for (int i = 0; i < records.size(); i++) {
+        if (bpAlert != null) {
+            triggerAlert(bpAlert);
+        }
+        if (bsAlert != null) {
+            triggerAlert(bsAlert);
+        }
+
+
+
+
+        /*for (int i = 0; i < records.size(); i++) {
             int systolic = Integer.parseInt(records.get(i)[2]);
             int diastolic = Integer.parseInt(records.get(i)[3]);
 
@@ -74,10 +128,8 @@ public class AlertGenerator {
         } 
         else if (decreasingTrend) {
             //triggerAlert
-        }
+        }*/
     }
-}
-}
 
 
     /**
@@ -93,4 +145,4 @@ public class AlertGenerator {
     }
     
 }
-}
+

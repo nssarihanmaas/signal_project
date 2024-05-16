@@ -15,6 +15,8 @@ import com.cardio_generator.outputs.FileOutputStrategy;
 import com.cardio_generator.outputs.OutputStrategy;
 import com.cardio_generator.outputs.TcpOutputStrategy;
 import com.cardio_generator.outputs.WebSocketOutputStrategy;
+import com.data_management.DataReader;
+import com.data_management.DataStorage;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +42,12 @@ public class HealthDataSimulator {
 
         List<Integer> patientIds = initializePatientIds(patientCount);
         Collections.shuffle(patientIds); // Randomize the order of patient IDs
+
+        DataStorage dataStorage = new DataStorage();
+        DataReader.readData(dataStorage, "path_to_file"); 
+
+        
+
 
         scheduleTasksForPatients(patientIds);
     }
