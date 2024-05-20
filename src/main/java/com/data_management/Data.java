@@ -2,13 +2,10 @@ package com.data_management;
 
 import java.io.IOException;
 
-public class A
-{
-    public void methodA(){}
-}
 
 
-public interface DataReader {
+
+public interface Data {
     
 
     /**
@@ -17,7 +14,7 @@ public interface DataReader {
      * @param dataStorage the storage where data will be stored
      * @throws IOException if there is an error reading the data
      */
-    dataType [] readData(DataStorage dataStorage) throws IOException;
+    //dataType [] readData(DataStorage dataStorage) throws IOException;
 
     // FileOutputStrategy.java:36
     // onfile: Patient ID: string, Timestamp: string, Label: string, Data: string
