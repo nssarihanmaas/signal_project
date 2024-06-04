@@ -1,4 +1,4 @@
-package com.data_management;
+package com.data_storage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +52,22 @@ public class Patient {
      *         range
      */
     public List<PatientRecord> getRecords(long startTime, long endTime) {
-        // TODO Implement and test this method
+        List<PatientRecord> filteredRecords = new ArrayList<>();
+        for (PatientRecord record : patientRecords) {
+            if (record.getTimestamp() >= startTime && record.getTimestamp() <= endTime) {
+                filteredRecords.add(record);
+            }
+        }
+        return filteredRecords;
     }
+
+    public int getPatientId() {
+        return patientId;
+    }
+
+    public List<PatientRecord> getAllRecords() {
+        return patientRecords;
+    }
+
+    
 }
