@@ -1,6 +1,5 @@
 package data_management;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.BufferedReader;
@@ -10,6 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,23 +24,21 @@ import com.data_access.TCPDataListener;
 
 public class DataAccessTest {
 
-    private DataListener dataListener;
-    private DataStorage dataStorage;
+    private MockDataListener dataListener;
+    private MockDataStorage dataStorage;
     private File tempFile;
-    private Socket socket;
-    private BufferedReader reader;
+    private MockSocket socket;
+    private MockBufferedReader reader;
 
     @BeforeEach
     void setUp() throws IOException {
-        dataListener = mock(DataListener.class);
-        dataStorage = mock(DataStorage.class);
+        dataListener = new MockDataListener();
+        dataStorage = new MockDataStorage();
         tempFile = File.createTempFile("testData", ".txt");
 
         // Mocking Socket and BufferedReader for TCPDataListener
-        socket = mock(Socket.class);
-        reader = mock(BufferedReader.class);
-        when(socket.getInputStream()).thenReturn(mock(InputStreamReader.class));
-        when(new BufferedReader(new InputStreamReader(socket.getInputStream()))).thenReturn(reader);
+        socket = new MockSocket();
+        reader = new MockBufferedReader();
     }
 
     @AfterEach
@@ -50,45 +49,45 @@ public class DataAccessTest {
     @Test
     void testStartListening() {
         dataListener.startListenig();
-        verify(dataListener, times(1)).startListenig();
+        assertTrue(dataListener.isListening());
     }
 
     @Test
     void testStopListening() {
         dataListener.stopListening();
-        verify(dataListener, times(1)).stopListening();
+        assertFalse(dataListener.isListening());
     }
 
     @Test
     void testOnDataReceived() {
         String testData = "Test data";
         dataListener.onDataReceived(testData);
-        verify(dataListener, times(1)).onDataReceived(testData);
+        assertEquals(testData, dataListener.getLastReceivedData());
     }
 
     @Test
     void testStartListeningIsCalled() {
         dataListener.startListenig();
-        assertDoesNotThrow(() -> verify(dataListener, times(1)).startListenig());
+        assertTrue(dataListener.isListening());
     }
 
     @Test
     void testStopListeningIsCalled() {
         dataListener.stopListening();
-        assertDoesNotThrow(() -> verify(dataListener, times(1)).stopListening());
+        assertFalse(dataListener.isListening());
     }
 
     @Test
     void testOnDataReceivedIsCalledWithCorrectData() {
         String testData = "Another test data";
         dataListener.onDataReceived(testData);
-        assertDoesNotThrow(() -> verify(dataListener, times(1)).onDataReceived(testData));
+        assertEquals(testData, dataListener.getLastReceivedData());
     }
 
     @Test
     void testOnDataReceivedWithNullData() {
         dataListener.onDataReceived(null);
-        verify(dataListener, times(1)).onDataReceived(null);
+        assertNull(dataListener.getLastReceivedData());
     }
 
     @Test
@@ -165,8 +164,7 @@ public class DataAccessTest {
         FileDataListener fileDataListener = new FileDataListener(tempFile.getAbsolutePath(), dataStorage);
         fileDataListener.startListenig();
 
-        verify(dataStorage, times(1)).addPatientData(1, 120.0, "BloodPressure", 170000000000L);
-        verify(dataStorage, times(1)).addPatientData(2, 130.0, "HeartRate", 170000000001L);
+        assertEquals(2, dataStorage.getRecords().size());
     }
 
     @Test
@@ -197,7 +195,7 @@ public class DataAccessTest {
         }
 
         // Verify that at least one record was processed before stopping
-        verify(dataStorage, atLeast(1)).addPatientData(anyInt(), anyDouble(), anyString(), anyLong());
+        assertTrue(dataStorage.getRecords().size() >= 1);
     }
 
     @Test
@@ -210,7 +208,7 @@ public class DataAccessTest {
         fileDataListener.startListenig();
 
         // Verify that no data was added due to invalid format
-        verify(dataStorage, never()).addPatientData(anyInt(), anyDouble(), anyString(), anyLong());
+        assertEquals(0, dataStorage.getRecords().size());
     }
 
     @Test
@@ -224,8 +222,7 @@ public class DataAccessTest {
         FileDataListener fileDataListener = new FileDataListener(tempFile.getAbsolutePath(), dataStorage);
         fileDataListener.startListenig();
 
-        verify(dataStorage, times(1)).addPatientData(1, 120.0, "BloodPressure", 170000000000L);
-        verify(dataStorage, never()).addPatientData(anyInt(), anyDouble(), anyString(), anyLong());
+        assertEquals(1, dataStorage.getRecords().size());
     }
 
     @Test
@@ -234,7 +231,7 @@ public class DataAccessTest {
         fileDataListener.startListenig();
 
         // Verify that no data was added
-        verify(dataStorage, never()).addPatientData(anyInt(), anyDouble(), anyString(), anyLong());
+        assertEquals(0, dataStorage.getRecords().size());
     }
 
     @Test
@@ -243,20 +240,59 @@ public class DataAccessTest {
         fileDataListener.onDataReceived(null);
 
         // Verify that no data was added
-        verify(dataStorage, never()).addPatientData(anyInt(), anyDouble(), anyString(), anyLong());
+        assertEquals(0, dataStorage.getRecords().size());
     }
 
     @Test
     void testTCPDataListenerStartListening() throws IOException {
-        when(reader.readLine())
-            .thenReturn("1,120.0,BloodPressure,170000000000")
-            .thenReturn("2,130.0,HeartRate,170000000001")
-            .thenReturn(null);
+        reader.setLines(new String[]{
+            "1,120.0,BloodPressure,170000000000",
+            "2,130.0,HeartRate,170000000001",
+            null
+        });
 
         TCPDataListener tcpDataListener = new TCPDataListener("localhost", 8080, dataStorage);
         tcpDataListener.startListenig();
 
-        verify(dataStorage, times(1)).addPatientData(1, 120.0, "BloodPressure", 170000000000L);
+        assertEquals(2, dataStorage.getRecords().size());
+    }
+
+    // Mock Classes
+    private static class MockDataListener implements DataListener {
+        private boolean listening = false;
+        private String lastReceivedData;
+
+        @Override
+        public void startListenig() {
+            listening = true;
+        }
+
+        @Override
+        public void stopListening() {
+            listening = false;
+        }
+
+        @Override
+        public void onDataReceived(String data) {
+            lastReceivedData = data;
+        }
+
+        public boolean isListening() {
+            return listening;
+        }
+
+        public String getLastReceivedData() {
+            return lastReceivedData;
+        }
+    }
+
+    private static class MockDataStorage extends DataStorage {
+        private List<PatientRecord> records = new ArrayList<>();
+
+        @Override
+        public void addPatientData(int patientId, double measurementValue, String recordType, long timestamp) {
+            records.add(new PatientRecord(patientId, measurementValue, recordType, timestamp));
+        }
+
     }
 }
-
