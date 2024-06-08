@@ -1,7 +1,7 @@
 package com.data_access;
 
 public interface DataListener {
-    void startListenig();
+    void startListening();
 
     void stopListening();
 
