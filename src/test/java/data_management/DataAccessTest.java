@@ -54,6 +54,7 @@ public class DataAccessTest {
     void testStartListening() {
         dataListener.startListening();
         assertTrue(dataListener.isListening());
+        
     }
 
     @Test
