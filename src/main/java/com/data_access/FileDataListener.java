@@ -19,7 +19,7 @@ public class FileDataListener implements DataListener {
     }
 
     @Override
-    public void startListenig() {
+    public void startListening() {
         listening = true;
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -40,6 +40,9 @@ public class FileDataListener implements DataListener {
 
     @Override
     public void onDataReceived(String data) {
+        if (data == null) {
+            return;
+        }
         PatientRecord patientData = DataParser.parse(data);
         if (patientData != null) {
             dataStorage.addPatientData(patientData.getPatientId(), patientData.getMeasurementValue(),

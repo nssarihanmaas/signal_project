@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 import com.data_storage.DataStorage;
-
 import com.data_storage.PatientRecord;
 
 public class TCPDataListener implements DataListener {
@@ -15,6 +14,7 @@ public class TCPDataListener implements DataListener {
     private int port;
     private DataStorage dataStorage;
     private boolean listening;
+    private Socket socket;
 
     public TCPDataListener(String serverAddress, int port, DataStorage dataStorage) {
         this.serverAddress = serverAddress;
@@ -23,20 +23,32 @@ public class TCPDataListener implements DataListener {
         this.listening = false;
     }
 
+    public TCPDataListener(Socket socket, DataStorage dataStorage) {
+        this.socket = socket;
+        this.dataStorage = dataStorage;
+        this.listening = false;
+    }
+
     @Override
-    public void startListenig() {
+    public void startListening() {
         listening = true;
-        try (Socket socket = new Socket(this.serverAddress, this.port);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-            System.out.println("Connected to the server at " + serverAddress + ":" + port);
-            String line;
-            while (listening && (line = reader.readLine()) != null) {
-                onDataReceived(line);
+        try {
+            if (socket == null) {
+                socket = new Socket(this.serverAddress, this.port);
+            }
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+                System.out.println("Connected to the server at " + serverAddress + ":" + port);
+                String line;
+                while (listening && (line = reader.readLine()) != null) {
+                    onDataReceived(line);
+                }
+
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
@@ -46,6 +58,9 @@ public class TCPDataListener implements DataListener {
 
     @Override
     public void onDataReceived(String data) {
+        if (data == null) {
+            return;
+        }
         PatientRecord patientData = DataParser.parse(data);
         if (patientData != null) {
             dataStorage.addPatientData(patientData.getPatientId(), patientData.getMeasurementValue(),

@@ -3,11 +3,11 @@ package com.data_access;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import com.data_storage.DataStorage;
-import com.data_storage.PatientRecord;
-
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+
+import com.data_storage.DataStorage;
+import com.data_storage.PatientRecord;
 
 public class WebSocketDataListener implements DataListener {
 
@@ -23,7 +23,7 @@ public class WebSocketDataListener implements DataListener {
     }
 
     @Override
-    public void startListenig() {
+    public void startListening() {
         try {
             webSocketClient = new WebSocketClient(new URI(serverUri)) {
                 @Override
