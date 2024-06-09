@@ -27,6 +27,8 @@ public class DataAccessTest {
     private MockDataListener dataListener;
     private MockDataStorage dataStorage;
     private File tempFile;
+
+
     private MockSocket socket;
     private MockBufferedReader reader;
 
@@ -40,6 +42,7 @@ public class DataAccessTest {
         socket = new MockSocket();
         reader = new MockBufferedReader();
     }
+    
 
     @AfterEach
     void tearDown() {
