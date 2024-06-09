@@ -1,6 +1,6 @@
 package com.alerts;
 
-import java.util.*;
+import java.util.List;
 
 import com.data_storage.DataStorage;
 import com.data_storage.Patient;
@@ -56,7 +56,7 @@ public class AlertGenerator {
      *
      * @param alert the alert object containing details about the alert condition
      */
-    private void triggerAlert(Alert alert) {
+    void triggerAlert(Alert alert) {
         System.out.println("Alert! Patient ID: " + alert.getPatientId() +
                 ", " + alert.getCondition() + " at " + alert.getTimestamp());
     }

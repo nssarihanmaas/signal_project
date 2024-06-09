@@ -61,10 +61,6 @@ public class BloodPressureDataGeneratorTest {
         }
     }
 
-    @Test
-    void testGeneratedValuesWithinExpectedRange() {
-        // Test
-    }
 
     @Test
     void testGenerateInvalidPatientId() {
