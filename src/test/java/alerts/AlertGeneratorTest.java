@@ -3,22 +3,15 @@ package alerts;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.cardio_generator.data_storage.DataStorage;
-import com.cardio_generator.Patient;
-import com.data_storage.PatientRecord;
+import com.data_storage.*;
+import com.cardio_generator.generators.*;
+import com.alerts.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-// Import the AlertGenerator class
-import com.cardio_generator.generators.AlertGenerator;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-class DataStorage {
-    // Assuming DataStorage has some storage mechanism
-}
 
 class Patient {
     private List<PatientRecord> records;
