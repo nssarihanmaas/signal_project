@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 
-import com.cardio_generator.generators.AlertGenerator;
+import com.cardio_generator.generators.*;
 
 public class AlertGeneratorTest {
 
