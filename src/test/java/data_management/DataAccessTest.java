@@ -34,6 +34,8 @@ public class DataAccessTest {
     private MockDataListener dataListener;
     private MockDataStorage dataStorage;
     private File tempFile;
+    private MockSocket socket;
+    private MockBufferedReader reader;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -41,6 +43,7 @@ public class DataAccessTest {
         dataStorage = new MockDataStorage();
         tempFile = File.createTempFile("testData", ".txt");
     }
+    
 
     @AfterEach
     void tearDown() {
