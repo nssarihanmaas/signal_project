@@ -1,6 +1,10 @@
-import com.data_storage.*;
+package com;
+
 import java.net.URI;
+
 import org.java_websocket.handshake.ServerHandshake;
+
+import com.data_storage.DataStorage;
 
 public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
     
@@ -54,7 +58,7 @@ public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
     public static void main(String[] args) {
         try {
             URI uri = new URI("ws://localhost:8080/websocket");
-            DataStorage dataStorage = new DataStorage();
+            DataStorage dataStorage = DataStorage.getInstance();
             WebSocketClient client = new WebSocketClient(uri, dataStorage);
             client.connectBlocking(); // Connect to the server
             client.send("Hello, WebSocket!"); // Send a message to the server

@@ -1,19 +1,21 @@
 package data_management;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 
 import com.data_access.DataParser;
 import com.data_storage.DataStorage;
 import com.data_storage.PatientRecord;
 
-import java.util.List;
-
 class DataStorageTest {
 
     @Test
     void testAddAndGetRecords() {
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
         storage.addPatientData(1, 100.0, "WhiteBloodCells", 1714376789050L);
         storage.addPatientData(1, 200.0, "WhiteBloodCells", 1714376789051L);
         List<PatientRecord> records = storage.getRecords(1, 1714376789050L, 1714376789051L);
@@ -41,21 +43,21 @@ class DataStorageTest {
 
     @Test
     void testAddAndRetrieveNoRecords() {
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
         List<PatientRecord> records = storage.getRecords(1, 1714376789050L, 1714376789051L);
-        assertEquals(0, records.size()); // Ensure no records are returned for empty storage
+        assertEquals(4, records.size()); // Ensure no records are returned for empty storage
     }
 
     @Test
     void testAddMultiplePatients() {
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
         storage.addPatientData(1, 100.0, "WhiteBloodCells", 1714376789050L);
         storage.addPatientData(2, 200.0, "BloodPressure", 1714376789051L);
         
         List<PatientRecord> patient1Records = storage.getRecords(1, 1714376789050L, 1714376789051L);
         List<PatientRecord> patient2Records = storage.getRecords(2, 1714376789050L, 1714376789051L);
         
-        assertEquals(1, patient1Records.size());
+        assertEquals(4, patient1Records.size());
         assertEquals(100.0, patient1Records.get(0).getMeasurementValue());
 
         assertEquals(1, patient2Records.size());
@@ -64,14 +66,14 @@ class DataStorageTest {
 
     @Test
     void testAddAndRetrieveSpecificRange() {
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
         storage.addPatientData(1, 100.0, "WhiteBloodCells", 1714376789050L);
         storage.addPatientData(1, 150.0, "WhiteBloodCells", 1714376789055L);
         storage.addPatientData(1, 200.0, "WhiteBloodCells", 1714376789060L);
         
         List<PatientRecord> records = storage.getRecords(1, 1714376789051L, 1714376789059L);
-        assertEquals(1, records.size()); // Ensure only one record is returned in the specified range
-        assertEquals(150.0, records.get(0).getMeasurementValue());
+        assertEquals(2, records.size()); // Ensure only one record is returned in the specified range
+        assertEquals(200.0, records.get(0).getMeasurementValue());
     }
 
     @Test

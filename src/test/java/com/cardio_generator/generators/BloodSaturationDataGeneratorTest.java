@@ -50,10 +50,6 @@ public class BloodSaturationDataGeneratorTest {
         }
     }
 
-    @Test
-    void testGeneratedValuesWithinExpectedRange() {
-        // Test
-    }
 
     @Test
     void testGenerateInvalidPatientId() {
