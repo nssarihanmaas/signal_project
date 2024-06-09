@@ -67,3 +67,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Project Members
 Student ID:i6337866
 Student ID:i6348068
+(We first added our StudentID's to the branch "master" before the first deadline but deleted that and made "main". We added the Student ID once again to here a bit later.)
